@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Зогсоох үзэгдэлтийн зай</title>
+<meta name="description" content="Зогсоох үзэгдэлтийн зайг AASHTO болон СНиП аргаар налуугийн засвартай бодох тооцоолуур.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="../index.html">Зам<span>·</span>Гүүр тооцоолуур</a>
+    <nav><a href="../index.html">Бүх тооцоо</a></nav>
+  </div>
+  <header>
+    <div class="crumb">Авто замын уулзвар · <b>1.1</b> Үзэгдэлтийн тооцоо</div>
+    <h1>Зогсоох үзэгдэлтийн зай</h1>
+    <p class="lede">Жолооч саадыг хараад, хариу үйлдэл хийж, тоормослон зогсоход шаардагдах хамгийн бага зай. AASHTO (2018 Green Book) болон СНиП 2.05.02-85 аргаар зэрэг бодож, налуугийн нөлөөг тооцно.</p>
+  </header>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <form class="panel" id="form" autocomplete="off">
+      <div class="fieldset">
+        <h3>Замын нөхцөл</h3>
+        <div class="field">
+          <label for="V">Тооцооны хурд, V</label>
+          <div class="row"><input type="number" id="V" value="60" min="20" max="150" step="5"><span class="unit">км/ц</span></div>
+          <input type="range" id="Vr" value="60" min="20" max="150" step="5" aria-label="Тооцооны хурд гулсуур">
+        </div>
+        <div class="field">
+          <label for="i">Уртааш налуу, i</label>
+          <div class="row"><input type="number" id="i" value="-3" min="-12" max="12" step="0.5"><span class="unit">%</span><span class="chip" id="gchip">уруу</span></div>
+          <span class="hint">Уруудах чиглэлд хасах (−), өгсөх чиглэлд нэмэх (+) тэмдэгтэй оруулна.</span>
+        </div>
+      </div>
+
+      <div class="fieldset">
+        <h3>AASHTO параметр</h3>
+        <div class="row2">
+          <div class="field">
+            <label for="ta">Хариу үйлдлийн хугацаа, t</label>
+            <div class="row"><input type="number" id="ta" value="2.5" min="0.5" max="5" step="0.1"><span class="unit">с</span></div>
+          </div>
+          <div class="field">
+            <label for="a">Удаашралт, a</label>
+            <div class="row"><input type="number" id="a" value="3.4" min="1" max="8" step="0.1"><span class="unit">м/с²</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fieldset">
+        <h3>СНиП параметр</h3>
+        <div class="row2">
+          <div class="field">
+            <label for="ts">Хариу үйлдлийн хугацаа, t</label>
+            <div class="row"><input type="number" id="ts" value="1.0" min="0.5" max="5" step="0.1"><span class="unit">с</span></div>
+          </div>
+          <div class="field">
+            <label for="K">Тоормосны үр ашгийн коэф., Kэ</label>
+            <input type="number" id="K" value="1.2" min="1" max="2" step="0.05">
+          </div>
+        </div>
+        <div class="field">
+          <label for="phiSel">Барьцалдалтын коэффициент, φ</label>
+          <select id="phiSel">
+            <option value="0.5">Хуурай хучилт — 0.5</option>
+            <option value="0.3" selected>Нойтон хучилт — 0.3</option>
+            <option value="0.2">Шаварлаг / цастай — 0.2</option>
+            <option value="0.1">Мөстэй — 0.1</option>
+            <option value="custom">Өөр утга…</option>
+          </select>
+          <input type="number" id="phi" value="0.3" min="0.05" max="0.8" step="0.01" hidden aria-label="φ өөр утга">
+        </div>
+        <div class="field">
+          <label for="l0">Аюулгүйн зай, l₀</label>
+          <div class="row"><input type="number" id="l0" value="10" min="0" max="20" step="1"><span class="unit">м</span></div>
+          <span class="hint">Зогссон машин ба саадын хоорондох нөөц зай, ихэвчлэн 5–10 м.</span>
+        </div>
+      </div>
+    </form>
+
+    <!-- RESULTS -->
+    <section class="results" aria-live="polite">
+      <div class="cards">
+        <article class="card" id="cardA">
+          <div class="card-head"><h2>AASHTO</h2><span class="std">Green Book 2018</span></div>
+          <div class="big"><span class="num" id="A_design">—</span><span class="u">м</span></div>
+          <div class="exact" id="A_exact"></div>
+          <div class="breakdown" id="A_break"></div>
+        </article>
+        <article class="card" id="cardS">
+          <div class="card-head"><h2>СНиП</h2><span class="std">2.05.02-85 арга</span></div>
+          <div class="big"><span class="num" id="S_design">—</span><span class="u">м</span></div>
+          <div class="exact" id="S_exact"></div>
+          <div class="breakdown" id="S_break"></div>
+        </article>
+      </div>
+
+      <div class="road">
+        <h3>Зайн бүрэлдэхүүн, масштабаар</h3>
+        <div class="lane"><span class="name">AASHTO</span><div class="track" id="trackA"></div></div>
+        <div class="lane"><span class="name">СНиП</span><div class="track" id="trackS"></div></div>
+        <div class="legend">
+          <span><i class="sw r"></i>Хариу үйлдлийн үед туулах зам</span>
+          <span><i class="sw b"></i>Тоормослох зам</span>
+          <span><i class="sw l0"></i>Аюулгүйн зай l₀</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="copy">Тооцоог текстээр хуулах</button>
+        <span class="toast" id="toast" role="status"></span>
+      </div>
+      <textarea id="fallback" hidden readonly aria-label="Хуулах текст"></textarea>
+    </section>
+  </div>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <h2>Хурдаар харьцуулсан хүснэгт</h2>
+    <p class="tnote">Хэвтээ зам (i = 0), дээр оруулсан параметрээр бодсон утгыг стандартын хүснэгтийн утгатай харьцуулав. Тооцоо нь хүснэгтээс 10%-иас илүү бага гарвал улаанаар тэмдэглэнэ. Одоогийн хурдны мөрийг өнгөөр ялгасан.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>V, км/ц</th><th>AASHTO тооцоо, м</th><th>AASHTO хүснэгт, м</th><th>СНиП тооцоо, м</th><th>СНиП хүснэгт, м</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <h2>Лавлах ба тайлбар</h2>
+    <div class="refs">
+      <div class="ref">
+        <h3>Томьёо</h3>
+        <p><b>AASHTO, хэвтээ:</b> <span style="font-family:var(--mono)">SSD = 0.278·V·t + 0.039·V²/a</span></p>
+        <p><b>AASHTO, налуутай:</b> <span style="font-family:var(--mono)">SSD = 0.278·V·t + V²/[254·(a/9.81 ± G)]</span></p>
+        <p><b>СНиП:</b> <span style="font-family:var(--mono)">S = V·t/3.6 + Kэ·V²/[254·(φ ± i)] + l₀</span></p>
+        <p>Дизайны утгыг 5 м-ийн нарийвчлалтай дээш тоймлов.</p>
+      </div>
+      <div class="ref">
+        <h3>Харааны өндөр (босоо муруйд хэрэглэнэ)</h3>
+        <dl>
+          <dt>AASHTO, нүд h₁</dt><dd>1.08 м</dd>
+          <dt>AASHTO, саад h₂</dt><dd>0.60 м</dd>
+          <dt>СНиП, нүд h₁</dt><dd>1.20 м</dd>
+          <dt>СНиП, саад h₂</dt><dd>0.20 м</dd>
+        </dl>
+      </div>
+      <div class="ref">
+        <h3>Уулзварт хэрэглэх нь</h3>
+        <p>Уулзвар руу орох чиглэл бүр дээр зогсоох үзэгдэлт хангагдсан байх ёстой. Уруу налуутай орох чиглэлд налуугийн засвартай утгыг ашиглана. Энэ тооцоо дараагийн шатны уулзварын үзэгдэлтийн гурвалжны тооцооны суурь болно.</p>
+        <p>Хүснэгтийн утгуудыг Монгол улсад одоо мөрдөгдөж буй замын норм, дүрэмтэй тулгаж баталгаажуулна уу.</p>
+      </div>
+    </div>
+  </section>
+  <footer class="site">
+    <p><strong>Анхааруулга.</strong> Энэхүү хэрэгслийн үр дүн нь лавлах зорилготой. Төсөлд ашиглахын өмнө Монгол улсад мөрдөгдөж буй норм, дүрэм, стандарттай тулгаж шалгах нь хэрэглэгчийн хариуцлага юм.</p>
+    <p>Алдаа олсон эсвэл санал байвал GitHub репозиторийн Issues хэсэгт бичнэ үү.</p>
+  </footer>
+</div>
+<script src="../assets/zogsooh-uzegdelt.js"></script>
+</body>
+</html>
